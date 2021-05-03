@@ -1,0 +1,17 @@
+{
+  "name": "instagram",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "lerna run start",
+    "start:frontend": "lerna run --scope frontend start",
+    "test": "lerna run test"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "lerna": "^4.0.0"
+  }
+}
