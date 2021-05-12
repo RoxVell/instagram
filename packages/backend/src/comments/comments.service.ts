@@ -12,12 +12,38 @@ interface CreateCommentData {
   message: string;
 }
 
+interface LikeCommentData {
+  userId: string;
+  commentId: string;
+}
+
 @Injectable()
 export class CommentsService {
+  private readonly likeCommentAction: (payload: { entityId: string, ownerId: string }) => Promise<{
+    error: boolean;
+    message: string;
+  }>;
+
+  private readonly unlikeCommentAction: (payload: { entityId: string, ownerId: string }) => Promise<{
+    error: boolean;
+    message: string;
+  }>;
+
   constructor(
     @InjectModel(Comment.name) private readonly commentsRepository: Model<CommentDocument>,
+    @InjectModel(CommentLikes.name) private readonly commentLikesRepository: Model<CommentLikesDocument>,
     private postsService: PostsService
   ) {
+    const { like, unlike } = Utils.likeEntityMixin(
+      commentsRepository,
+      commentLikesRepository,
+      {
+        ownerField: 'userId',
+        entityField: 'commentId'
+      }
+    );
+    this.likeCommentAction = like;
+    this.unlikeCommentAction = unlike;
   }
 
   async createComment(commentData: CreateCommentData) {
@@ -32,5 +58,19 @@ export class CommentsService {
 
   async getCommentsByPostId(postId) {
     return this.commentsRepository.find({ postId });
+  }
+
+  async likeComment(likeCommentData: LikeCommentData) {
+    return this.likeCommentAction({
+      entityId: likeCommentData.commentId,
+      ownerId: likeCommentData.userId
+    });
+  }
+
+  async unlikeComment(likeCommentData: LikeCommentData) {
+    return this.unlikeCommentAction({
+      entityId: likeCommentData.commentId,
+      ownerId: likeCommentData.userId
+    });
   }
 }

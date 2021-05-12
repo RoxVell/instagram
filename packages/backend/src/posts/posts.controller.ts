@@ -78,4 +78,32 @@ export class PostsController {
       throw new BadRequestException();
     }
   }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/:postId/like')
+  async likeComment(@Req() request, @Param() params) {
+    try {
+      return await this.postsService.likePost({
+        userId: request.user.id,
+        commentId: params.postId
+      });
+    } catch (e) {
+      console.log(e)
+      throw new BadRequestException();
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('/:postId/unlike')
+  async unlikeComment(@Req() request, @Param() params) {
+    try {
+      return await this.postsService.unlikePost({
+        userId: request.user.id,
+        commentId: params.postId
+      });
+    } catch (e) {
+      console.log(e)
+      throw new BadRequestException();
+    }
+  }
 }
